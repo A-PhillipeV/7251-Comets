@@ -19,7 +19,7 @@
  * SOFTWARE.
  */
 
-package org.firstinspires.ftc.teamcode.vision;
+package org.firstinspires.ftc.teamcode.Vision;
 
 
 import com.acmerobotics.dashboard.FtcDashboard;
