@@ -4,9 +4,8 @@ This GitHub repository is the heart of 7251-Comets. This repo is for the 2022-20
 
 ## Using This Repo
 
-__Disclaimer: If you use this repo by it's own, it will not work!!__  
-Download the current FTC-Robot Controller SDK: https://github.com/FIRST-Tech-Challenge/FtcRobotController 
-Go to the FtcRobotController/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/ folder and copypaste all of the given files in this rep. 
+Download this repo directly to Android Studio and it should work!  
+Use Github Desktop to commit/push directly to this repo. Let the lead programmer know your username/email for github so you have access to it.  
 We are currrently using:
 - FTC Dashboard
 - RoadRunner
