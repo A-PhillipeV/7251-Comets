@@ -19,16 +19,19 @@
  * SOFTWARE.
  */
 
-package org.firstinspires.ftc.teamcode.Vision;
+package org.firstinspires.ftc.teamcode.Comp;
 
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.Vision.AprilTagDetectionPipeline;
+import org.firstinspires.ftc.teamcode.Hardware.AutoBudgetHardware;
 import org.firstinspires.ftc.teamcode.Hardware.HardwareBarthRobot;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
@@ -39,19 +42,11 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import java.util.ArrayList;
 
 @Autonomous (group = "Vision")
-public class AprilTagTesting extends LinearOpMode
+public class REDAutoLeft extends LinearOpMode
 {
-    static final double     COUNTS_PER_MOTOR_REV    = 1440 ;
-    static final double     DRIVE_GEAR_REDUCTION    = 1.0 ;
-    static final double     WHEEL_DIAMETER_INCHES   = 3.75 ;
-    static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
-            (WHEEL_DIAMETER_INCHES * 3.1415);
-    static final double     DRIVE_SPEED             = 0.6;
-    static final double     TURN_SPEED              = 0.5;
-
     OpenCvCamera camera;
-    AprilTagDetectionPipeline aprilTagDetectionPipeline;
-    HardwareBarthRobot robot = new HardwareBarthRobot(this);
+    AutonomousPipeline autonomousPipeline;
+    AutoBudgetHardware drive = new AutoBudgetHardware(hardwareMap);
     private ElapsedTime runtime = new ElapsedTime();
 
     static final double FEET_PER_METER = 3.28084;
@@ -68,7 +63,7 @@ public class AprilTagTesting extends LinearOpMode
     // UNITS ARE METERS
     double tagsize = 0.166;
 
-     // Tag ID 1,2,3 from the 36h11 family
+    // Tag ID 1,2,3 from the 36h11 family
     int one = 1;
     int two = 2;
     int three = 3;
@@ -78,15 +73,14 @@ public class AprilTagTesting extends LinearOpMode
     @Override
     public void runOpMode()
     {
-        robot.init();
         FtcDashboard dashboard = FtcDashboard.getInstance();
         telemetry = dashboard.getTelemetry();
-        
+
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
-        aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
+        autonomousPipeline = new AutonomousPipeline(tagsize, fx, fy, cx, cy);
 
-        camera.setPipeline(aprilTagDetectionPipeline);
+        camera.setPipeline(autonomousPipeline);
         camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
         {
             @Override
@@ -112,7 +106,7 @@ public class AprilTagTesting extends LinearOpMode
          */
         while (!isStarted() && !isStopRequested())
         {
-            ArrayList<AprilTagDetection> currentDetections = aprilTagDetectionPipeline.getLatestDetections();
+            ArrayList<AprilTagDetection> currentDetections = autonomousPipeline.getLatestDetections();
 
 
             if(currentDetections.size() != 0)
@@ -190,56 +184,22 @@ public class AprilTagTesting extends LinearOpMode
 
         /* Actually do something useful */
         if(tagOfInterest == null || tagOfInterest.id == one){
-
-            robot.motorRight.setPower(1);
-            robot.motorLeft.setPower(1);
-            //encoderDrive(1,-24,-24);
-            sleep(2000);
-            robot.motorLeft.setPower(0);
-            robot.motorRight.setPower(0);
-            sleep(1000);
-
-            //DONUTS
-            robot.motorLeft.setPower(1);
-            sleep(20000);
-
-            /*
-            robot.motorRight.setPower(1);
-            sleep(3000);
-            robot.motorRight.setPower(0);
-            */
-            /*for(int i = 0; i < 50; i++){
-                robot.motorRight.setPower(1);
-                robot.motorLeft.setPower(1);
-                sleep(1000);
-                robot.motorLeft.setPower(-1);
-                robot.motorRight.setPower(-1);
-                sleep(1000);
-            }
-
-             */
-
+            Trajectory traj = drive.trajectoryBuilder(new Pose2d())
+                    .splineTo(new Vector2d(3, 3), 0)
+                    .build();
+            drive.followTrajectory(traj);
         }else if(tagOfInterest.id == two){
-            /* Move backwards */
-            robot.motorLeft.setPower(-1);
-            robot.motorRight.setPower(-1);
+            Trajectory traj = drive.trajectoryBuilder(new Pose2d())
+                    .splineTo(new Vector2d(-2, 3), 0)
+                    .build();
+            drive.followTrajectory(traj);
         }else{
-            //trajectory
+
         }
-
-
-        /* You wouldn't have this in your autonomous, this is just to prevent the sample from ending */
-        //while (opModeIsActive()) {sleep(20);}
     }
 
     void tagToTelemetry(AprilTagDetection detection)
     {
         telemetry.addLine(String.format("\nDetected tag ID=%d", detection.id));
-        telemetry.addLine(String.format("Translation X: %.2f feet", detection.pose.x*FEET_PER_METER));
-        telemetry.addLine(String.format("Translation Y: %.2f feet", detection.pose.y*FEET_PER_METER));
-        telemetry.addLine(String.format("Translation Z: %.2f feet", detection.pose.z*FEET_PER_METER));
-        telemetry.addLine(String.format("Rotation Yaw: %.2f degrees", Math.toDegrees(detection.pose.yaw)));
-        telemetry.addLine(String.format("Rotation Pitch: %.2f degrees", Math.toDegrees(detection.pose.pitch)));
-        telemetry.addLine(String.format("Rotation Roll: %.2f degrees", Math.toDegrees(detection.pose.roll)));
     }
 }
