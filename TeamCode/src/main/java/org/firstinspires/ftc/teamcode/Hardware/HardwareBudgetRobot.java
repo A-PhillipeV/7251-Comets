@@ -5,6 +5,7 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 
 /**
  *   Budget: Mecanum/Holometric Drive
@@ -17,7 +18,8 @@ public class HardwareBudgetRobot {
     private LinearOpMode myOpMode = null;   // gain access to methods in the calling OpMode.
 
     /* Public Opmode Members */
-    public DcMotor motor1, motor2, motor3, motor4;
+    public DcMotor motor1, motor2, motor3, motor4, arm;
+    public Servo hand;
     BNO055IMU imu;
 
 
@@ -32,6 +34,8 @@ public class HardwareBudgetRobot {
         motor3 = myOpMode.hardwareMap.get(DcMotor.class, "Motor 3");
         motor4 = myOpMode.hardwareMap.get(DcMotor.class, "Motor 4");
 
+        arm = myOpMode.hardwareMap.get(DcMotor.class, "Arm");
+
         motor1.setDirection(DcMotor.Direction.REVERSE);
         motor2.setDirection(DcMotor.Direction.REVERSE);
 
@@ -39,6 +43,10 @@ public class HardwareBudgetRobot {
         motor2.setPower(0);
         motor3.setPower(0);
         motor4.setPower(0);
+        arm.setPower(0);
+
+        hand = myOpMode.hardwareMap.get(Servo.class, "Hand");
+        hand.setPosition(0.0);
 
 
 
