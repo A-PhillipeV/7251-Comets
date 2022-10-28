@@ -57,10 +57,10 @@ public class BudgetTeleOp extends LinearOpMode {
             double backRightPower = (y + x - rx) / denominator;
 
 
-
+//ruight trigger =  claw //left trigger = slow down
             double throtte_control = .5;
             double slowDown = 1;
-            if(gamepad1.right_bumper)
+            if(gamepad1.left_trigger == 1) //if the button is pressed
                 slowDown -= 0.25;
 
 

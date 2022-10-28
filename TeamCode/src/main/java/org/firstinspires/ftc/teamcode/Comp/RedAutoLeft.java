@@ -186,7 +186,7 @@ public class RedAutoLeft extends LinearOpMode
             double frontRightPower = (y - x) / denominator;
             double backRightPower = (y + x) / denominator;
 
-            double throtte_control = .75;
+            double throtte_control = .25;
 
             robot.motor1.setPower(frontLeftPower*throtte_control);
             robot.motor2.setPower(backLeftPower*throtte_control);
@@ -207,7 +207,7 @@ public class RedAutoLeft extends LinearOpMode
             double frontRightPower = (y - x) / denominator;
             double backRightPower = (y + x) / denominator;
 
-            double throtte_control = .75;
+            double throtte_control = .25;
 
             robot.motor1.setPower(frontLeftPower*throtte_control);
             robot.motor2.setPower(backLeftPower*throtte_control);
@@ -229,7 +229,7 @@ public class RedAutoLeft extends LinearOpMode
             double frontRightPower = (y - x) / denominator;
             double backRightPower = (y + x) / denominator;
 
-            double throtte_control = .75;
+            double throtte_control = .25;
 
             robot.motor1.setPower(frontLeftPower*throtte_control);
             robot.motor2.setPower(backLeftPower*throtte_control);
