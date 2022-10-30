@@ -28,13 +28,12 @@ public class HardwareBudgetRobot {
     }
 
     public void init() {
-        /* Motors */
+        /* Drive Hardware */
         motor1 = myOpMode.hardwareMap.get(DcMotor.class, "Motor 1");
         motor2 = myOpMode.hardwareMap.get(DcMotor.class, "Motor 2");
         motor3 = myOpMode.hardwareMap.get(DcMotor.class, "Motor 3");
         motor4 = myOpMode.hardwareMap.get(DcMotor.class, "Motor 4");
 
-        arm = myOpMode.hardwareMap.get(DcMotor.class, "Arm");
 
         motor1.setDirection(DcMotor.Direction.REVERSE);
         motor2.setDirection(DcMotor.Direction.REVERSE);
@@ -43,7 +42,14 @@ public class HardwareBudgetRobot {
         motor2.setPower(0);
         motor3.setPower(0);
         motor4.setPower(0);
-        arm.setPower(0);
+
+
+        /* Intake Hardware */
+        arm = myOpMode.hardwareMap.get(DcMotor.class, "Arm");
+        arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        arm.setTargetPosition(0);
+        arm.setPower(.5);
 
         hand = myOpMode.hardwareMap.get(Servo.class, "Hand");
         hand.setPosition(0.0);
@@ -82,5 +88,17 @@ public class HardwareBudgetRobot {
         motor3.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motor4.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motor4.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
+
+    /* Intake Methods */
+
+    public void moveArmUp() {
+        arm.setTargetPosition(arm.getCurrentPosition()+100); //might need change?
+    }
+    public void moveArmDown() {
+        arm.setTargetPosition(arm.getCurrentPosition()-100); //might need change?
+    }
+    public void holdArmPosition() {
+        arm.setTargetPosition(arm.getCurrentPosition());
     }
 }

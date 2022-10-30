@@ -27,45 +27,44 @@ public class SwitchBudget extends LinearOpMode {
         while (opModeIsActive()) {
             double x = -gamepad1.left_stick_y;
             double y = -gamepad1.left_stick_x * 1.1;
-            double rxUp;
-            double rxDown;
+
 
             //Turn using d_pad
             boolean up = gamepad1.dpad_up;
             boolean down = gamepad1.dpad_down;
+            double rxUp = 0;
+            double rxDown = 0;
 
             //Move arm up and down
             double armControl = gamepad1.right_stick_x;
-            double gripPower = gamepad1.left_trigger; //servo
+            double gripPower = gamepad1.right_trigger; //servo
 
             int currentPosition = robot.arm.getCurrentPosition();
             //Servo to open/close hand
 
             if(armControl == 1)
-                robot.arm.setPower(0.5);
+                robot.moveArmUp();
             else if(armControl == -1)
-                robot.arm.setPower(-0.5);
+                robot.moveArmDown();
             else {
-                robot.arm.setPower(0);
-                robot.arm.setTargetPosition(currentPosition);
+                robot.holdArmPosition();
             }
 
-            if(up == 1)
-
-
-
-
+            //Turning values
+            if(up)
+                rxUp = 1.0;
+            if(down)
+                rxDown = 1.0;
 
             //Used to ensure same ratio and contain values between [-1,1]
+            double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rxUp) + Math.abs(rxDown), 1);
+            double frontLeftPower = (y + x + rxUp + rxDown) / denominator;
+            double backLeftPower = (y - x + rxUp + rxDown) / denominator;
+            double frontRightPower = (y - x - rxUp - rxDown) / denominator;
+            double backRightPower = (y + x - rxUp - rxDown) / denominator;
 
-            double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
-            double frontLeftPower = (y + x + rx) / denominator;
-            double backLeftPower = (y - x + rx) / denominator;
-            double frontRightPower = (y - x - rx) / denominator;
-            double backRightPower = (y + x - rx) / denominator;
 
 
-//ruight trigger =  claw //left trigger = slow down
             double throtte_control = .5;
             double slowDown = 1;
             if(gamepad1.left_trigger == 1) //if the button is pressed
@@ -87,4 +86,5 @@ public class SwitchBudget extends LinearOpMode {
         }
     }
 }
+
 
