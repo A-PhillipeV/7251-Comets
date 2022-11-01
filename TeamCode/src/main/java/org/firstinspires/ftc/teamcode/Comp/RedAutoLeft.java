@@ -70,7 +70,6 @@ public class RedAutoLeft extends LinearOpMode
         //Robot and Dash
         robot.init();
         FtcDashboard dashboard = FtcDashboard.getInstance();
-        telemetry = dashboard.getTelemetry();
 
         //Camera
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
@@ -175,8 +174,6 @@ public class RedAutoLeft extends LinearOpMode
         /* Actually do something useful */
         if(tagOfInterest == null || tagOfInterest.id == tag1){
             //trajectory
-            //Move Forward then Left
-
             double x = -1;
             double y = 1;
 
@@ -186,20 +183,39 @@ public class RedAutoLeft extends LinearOpMode
             double frontRightPower = (y - x) / denominator;
             double backRightPower = (y + x) / denominator;
 
-            double throtte_control = .25;
+            double throtte_control = .6;
 
             robot.motor1.setPower(frontLeftPower*throtte_control);
             robot.motor2.setPower(backLeftPower*throtte_control);
             robot.motor3.setPower(frontRightPower*throtte_control);
             robot.motor4.setPower(backRightPower*throtte_control);
 
+            sleep(1500);
+
+            x = 1;
+            y = 0;
+            // Move Forward
+            denominator = Math.max(Math.abs(y) + Math.abs(x), 1);
+            frontLeftPower = (y + x) / denominator;
+            backLeftPower = (y - x) / denominator;
+            frontRightPower = (y - x) / denominator;
+            backRightPower = (y + x) / denominator;
+
+            throtte_control = .25;
+
+            robot.motor1.setPower(frontLeftPower*throtte_control);
+            robot.motor2.setPower(backLeftPower*throtte_control);
+            robot.motor3.setPower(frontRightPower*throtte_control);
+            robot.motor4.setPower(backRightPower*throtte_control);
             sleep(2000);
+
+
 
             //Move Forward
         }else if(tagOfInterest.id == tag2){
-            //trajectory
-            double x = 0;
-            double y = 1;
+            //trajectory X & Y MIGHT BE SWAPPED ;) :P B0101101
+            double x = 1; //WORKS
+            double y = 0; //WORKS
 
             double denominator = Math.max(Math.abs(y) + Math.abs(x), 1);
             double frontLeftPower = (y + x) / denominator;
@@ -219,9 +235,8 @@ public class RedAutoLeft extends LinearOpMode
         }else if(tagOfInterest.id == tag3){
             //trajectory
             //Move Forward then Left
-
-            double x = 1;
-            double y = 1;
+            double x = 1; // works
+            double y = -1; // works
 
             double denominator = Math.max(Math.abs(y) + Math.abs(x), 1);
             double frontLeftPower = (y + x) / denominator;
@@ -229,14 +244,16 @@ public class RedAutoLeft extends LinearOpMode
             double frontRightPower = (y - x) / denominator;
             double backRightPower = (y + x) / denominator;
 
-            double throtte_control = .25;
+            double throtte_control = .50;
 
             robot.motor1.setPower(frontLeftPower*throtte_control);
             robot.motor2.setPower(backLeftPower*throtte_control);
             robot.motor3.setPower(frontRightPower*throtte_control);
             robot.motor4.setPower(backRightPower*throtte_control);
 
-            sleep(2000);
+            sleep(1700);
+
+            //CODE 3
 
         }
 

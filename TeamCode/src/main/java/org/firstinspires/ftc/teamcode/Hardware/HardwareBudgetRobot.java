@@ -46,15 +46,9 @@ public class HardwareBudgetRobot {
 
         /* Intake Hardware */
         arm = myOpMode.hardwareMap.get(DcMotor.class, "Arm");
-        arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        arm.setTargetPosition(0);
-        arm.setPower(.5);
-
+        arm.setPower(0);
         hand = myOpMode.hardwareMap.get(Servo.class, "Hand");
         hand.setPosition(0.0);
-
-
 
         /* Gyros */
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
@@ -91,14 +85,4 @@ public class HardwareBudgetRobot {
     }
 
     /* Intake Methods */
-
-    public void moveArmUp() {
-        arm.setTargetPosition(arm.getCurrentPosition()+100); //might need change?
-    }
-    public void moveArmDown() {
-        arm.setTargetPosition(arm.getCurrentPosition()-100); //might need change?
-    }
-    public void holdArmPosition() {
-        arm.setTargetPosition(arm.getCurrentPosition());
-    }
 }
