@@ -24,8 +24,8 @@ package org.firstinspires.ftc.teamcode.Comp;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Hardware.HardwareBudgetRobot;
@@ -33,13 +33,24 @@ import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvInternalCamera;
 
 import java.util.ArrayList;
 
 @Autonomous
-public class RedAutoLeft extends LinearOpMode
+public class RedAutoLeftENCODER extends LinearOpMode
 {
+
+    static final double     COUNTS_PER_MOTOR_REV    = 1120 ;
+    static final double     DRIVE_GEAR_REDUCTION    = 1.0 ;
+    static final double     WHEEL_DIAMETER_INCHES   = 4 ;
+    static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
+            (WHEEL_DIAMETER_INCHES * 3.1415);
+    static final double     DRIVE_SPEED             = 0.6;
+    static final double     TURN_SPEED              = 0.5;
+
+    private ElapsedTime runtime = new ElapsedTime();
+
+
     OpenCvCamera camera;
     AprilTagDetectionPipeline aprilTagDetectionPipeline;
     HardwareBudgetRobot robot = new HardwareBudgetRobot(this);
@@ -175,86 +186,14 @@ public class RedAutoLeft extends LinearOpMode
         /* Actually do something useful */
         if(tagOfInterest == null || tagOfInterest.id == tag1){
             //trajectory
-            double x = -1;
-            double y = 1;
 
-            double denominator = Math.max(Math.abs(y) + Math.abs(x), 1);
-            double frontLeftPower = (y + x) / denominator;
-            double backLeftPower = (y - x) / denominator;
-            double frontRightPower = (y - x) / denominator;
-            double backRightPower = (y + x) / denominator;
-
-            double throtte_control = .6;
-
-            robot.motor1.setPower(frontLeftPower*throtte_control);
-            robot.motor2.setPower(backLeftPower*throtte_control);
-            robot.motor3.setPower(frontRightPower*throtte_control);
-            robot.motor4.setPower(backRightPower*throtte_control);
-
-            sleep(1500);
-
-            x = 1;
-            y = 0;
-            // Move Forward
-            denominator = Math.max(Math.abs(y) + Math.abs(x), 1);
-            frontLeftPower = (y + x) / denominator;
-            backLeftPower = (y - x) / denominator;
-            frontRightPower = (y - x) / denominator;
-            backRightPower = (y + x) / denominator;
-
-            throtte_control = .25;
-
-            robot.motor1.setPower(frontLeftPower*throtte_control);
-            robot.motor2.setPower(backLeftPower*throtte_control);
-            robot.motor3.setPower(frontRightPower*throtte_control);
-            robot.motor4.setPower(backRightPower*throtte_control);
-            sleep(2000);
-
-
+            encoderDrive(1,12,12);
 
             //Move Forward
         }else if(tagOfInterest.id == tag2){
-            //trajectory X & Y MIGHT BE SWAPPED ;) :P B0101101
-            double x = 1; //WORKS
-            double y = 0; //WORKS
 
-            double denominator = Math.max(Math.abs(y) + Math.abs(x), 1);
-            double frontLeftPower = (y + x) / denominator;
-            double backLeftPower = (y - x) / denominator;
-            double frontRightPower = (y - x) / denominator;
-            double backRightPower = (y + x) / denominator;
-
-            double throtte_control = .25;
-
-            robot.motor1.setPower(frontLeftPower*throtte_control);
-            robot.motor2.setPower(backLeftPower*throtte_control);
-            robot.motor3.setPower(frontRightPower*throtte_control);
-            robot.motor4.setPower(backRightPower*throtte_control);
-
-            sleep(2000);
 
         }else if(tagOfInterest.id == tag3){
-            //trajectory
-            //Move Forward then Left
-            double x = 1; // works
-            double y = -1; // works
-
-            double denominator = Math.max(Math.abs(y) + Math.abs(x), 1);
-            double frontLeftPower = (y + x) / denominator;
-            double backLeftPower = (y - x) / denominator;
-            double frontRightPower = (y - x) / denominator;
-            double backRightPower = (y + x) / denominator;
-
-            double throtte_control = .50;
-
-            robot.motor1.setPower(frontLeftPower*throtte_control);
-            robot.motor2.setPower(backLeftPower*throtte_control);
-            robot.motor3.setPower(frontRightPower*throtte_control);
-            robot.motor4.setPower(backRightPower*throtte_control);
-
-            sleep(1700);
-
-            //CODE 3
 
         }
 
@@ -269,6 +208,69 @@ public class RedAutoLeft extends LinearOpMode
         telemetry.addLine(String.format("Rotation Yaw: %.2f degrees", Math.toDegrees(detection.pose.yaw)));
         telemetry.addLine(String.format("Rotation Pitch: %.2f degrees", Math.toDegrees(detection.pose.pitch)));
         telemetry.addLine(String.format("Rotation Roll: %.2f degrees", Math.toDegrees(detection.pose.roll)));
+    }
+
+    public void encoderDrive(double speed,
+                             double leftInches, double rightInches) {
+        int motor1Target, motor2Target, motor3Target, motor4Target;
+
+        // Ensure that the opmode is still active
+        if (opModeIsActive()) {
+            robot.motor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            robot.motor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            robot.motor3.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            robot.motor4.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+            robot.motor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.motor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.motor3.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.motor4.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+
+            leftInches = -1*leftInches;
+            rightInches = -1*rightInches;
+
+            //SETTING MOTOR POWER
+            robot.motor1.setPower(speed);
+            robot.motor2.setPower(speed);
+            robot.motor3.setPower(speed);
+            robot.motor4.setPower(speed);
+
+
+            // Determine new target position, and pass to motor controller
+            int newFrontLeftTarget = robot.motor1.getCurrentPosition() + (int)(leftInches * COUNTS_PER_INCH);
+            int newFrontRightTarget = robot.motor2.getCurrentPosition() + (int)(rightInches * COUNTS_PER_INCH);
+            int newBackLeftTarget = robot.motor3.getCurrentPosition() + (int)(leftInches * COUNTS_PER_INCH);
+            int newBackRightTarget = robot.motor4.getCurrentPosition() + (int)(rightInches * COUNTS_PER_INCH);
+
+            robot.motor1.setTargetPosition(-newFrontLeftTarget);
+            robot.motor2.setTargetPosition(-newFrontRightTarget);
+            robot.motor3.setTargetPosition(newBackLeftTarget);
+            robot.motor4.setTargetPosition(newBackRightTarget);
+
+            // Turn On RUN_TO_POSITION
+            robot.motor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.motor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.motor3.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.motor4.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            // reset the timeout time and start motion.
+            runtime.reset();
+
+
+            // Stop all motion;
+            robot.motor1.setPower(0);
+            robot.motor2.setPower(0);
+            robot.motor3.setPower(0);
+            robot.motor4.setPower(0);
+
+            // Turn off RUN_TO_POSITION
+            robot.motor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            robot.motor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            robot.motor3.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            robot.motor4.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        }
     }
 
 }

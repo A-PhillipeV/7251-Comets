@@ -5,6 +5,7 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 
 /**
@@ -18,7 +19,7 @@ public class HardwareBudgetRobot {
     private LinearOpMode myOpMode = null;   // gain access to methods in the calling OpMode.
 
     /* Public Opmode Members */
-    public DcMotor motor1, motor2, motor3, motor4, arm;
+    public DcMotor motor1,motor2, motor3, motor4, arm;
     public Servo hand;
     BNO055IMU imu;
 
@@ -43,7 +44,6 @@ public class HardwareBudgetRobot {
         motor3.setPower(0);
         motor4.setPower(0);
 
-
         /* Intake Hardware */
         arm = myOpMode.hardwareMap.get(DcMotor.class, "Arm");
         arm.setPower(0);
@@ -62,7 +62,7 @@ public class HardwareBudgetRobot {
 
     public void enableEncoders() {
         /* Drive Train */
-        motor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //motor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
