@@ -13,12 +13,11 @@ import org.firstinspires.ftc.teamcode.Hardware.HardwareBudgetRobot;
 public class EncoderValueTesting extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
 
-    HardwareBudgetRobot robot = new HardwareBudgetRobot();
+    HardwareBudgetRobot robot = new HardwareBudgetRobot(this);
     @Override
     public void runOpMode() {
         robot.init();
 
-        robot.arm.set
         waitForStart();
 
 
