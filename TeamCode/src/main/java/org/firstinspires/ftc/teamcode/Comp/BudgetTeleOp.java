@@ -33,7 +33,7 @@ public class BudgetTeleOp extends LinearOpMode {
             double armControl = gamepad2.right_stick_x;
             double gripPower = gamepad2.right_trigger; //servo
 
-            int currentPosition = robot.arm.getCurrentPosition();
+            //int currentPosition = robot.arm.getCurrentPosition();
             //Servo to open/close hand
 
             
@@ -47,12 +47,13 @@ public class BudgetTeleOp extends LinearOpMode {
 
 
 
-
             double throtte_control = .5;
             double slowDown = 1;
             if(gamepad1.right_bumper)
                 slowDown -= 0.25;
 
+
+            /*
             if(armControl == 1)
                 robot.arm.setPower(0.5);
             else if(armControl == -1)
@@ -62,11 +63,13 @@ public class BudgetTeleOp extends LinearOpMode {
                 robot.arm.setTargetPosition(currentPosition);
             }
 
+             */
+
             robot.motor1.setPower(frontLeftPower*throtte_control*slowDown);
             robot.motor2.setPower(backLeftPower*throtte_control*slowDown);
             robot.motor3.setPower(frontRightPower*throtte_control*slowDown);
             robot.motor4.setPower(backRightPower*throtte_control*slowDown);
-            robot.hand.setPosition(gripPower);
+            //robot.hand.setPosition(gripPower);
 
             telemetry.addData("frontLeft:", frontLeftPower);
             telemetry.addData("backLeft:", backLeftPower);

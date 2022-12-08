@@ -36,6 +36,7 @@ public class HardwareBudgetRobot {
         motor4 = myOpMode.hardwareMap.get(DcMotor.class, "Motor 4");
 
 
+
         motor1.setDirection(DcMotor.Direction.REVERSE);
         motor2.setDirection(DcMotor.Direction.REVERSE);
 
@@ -46,9 +47,11 @@ public class HardwareBudgetRobot {
 
         /* Intake Hardware */
         arm = myOpMode.hardwareMap.get(DcMotor.class, "Arm");
-        arm.setPower(0);
+        /*
         hand = myOpMode.hardwareMap.get(Servo.class, "Hand");
         hand.setPosition(0.0);
+
+         */
 
         /* Gyros */
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
@@ -60,29 +63,6 @@ public class HardwareBudgetRobot {
         parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
     }
 
-    public void enableEncoders() {
-        /* Drive Train */
-        //motor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motor3.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motor3.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motor4.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motor4.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-    }
-
-    public void disableEncoders() {
-        motor1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        motor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        motor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motor3.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        motor3.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motor4.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        motor4.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-    }
 
     /* Intake Methods */
 }
