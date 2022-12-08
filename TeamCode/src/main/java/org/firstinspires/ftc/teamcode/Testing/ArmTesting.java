@@ -23,33 +23,34 @@ public class ArmTesting extends LinearOpMode {
         arm = hardwareMap.get(DcMotor.class, "Arm");
         waitForStart();
 
-                double power = 1;
-                //If Y is pressed middle height
-                arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        double power = 1;
+        //If Y is pressed middle height
+        arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-                while(opModeIsActive()) {
-                    if (gamepad1.y) {
-                        arm.setTargetPosition(middleHeight);
-                        arm.setPower(power);
-                        arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        while(opModeIsActive()) {
+            if (gamepad1.y) {
+                arm.setTargetPosition(middleHeight);
+                arm.setPower(power);
+                arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-                    } else if (gamepad1.x) {
-                        arm.setTargetPosition(lowHeight);
-                        arm.setPower(power);
-                        arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            } else if (gamepad1.x) {
+                arm.setTargetPosition(lowHeight);
+                arm.setPower(power);
+                arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-                    } else {
-                        arm.setTargetPosition(0);
-                        arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    }
-
-
-                    telemetry.addData("Position", arm.getCurrentPosition());
-                    telemetry.update();
-                }
-
-
+            } else if (gamepad1.a){
+                arm.setTargetPosition(0);
+                arm.setPower(power);
+                arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             }
 
+
+            telemetry.addData("Position", arm.getCurrentPosition());
+            telemetry.update();
+        }
+
+
     }
+
+}
