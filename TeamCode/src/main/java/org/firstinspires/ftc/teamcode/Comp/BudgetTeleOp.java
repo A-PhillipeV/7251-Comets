@@ -103,6 +103,11 @@ public class BudgetTeleOp extends LinearOpMode {
                 robot.arm.setPower(1);
                 robot.arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             }
+            else if(robot.arm.getCurrentPosition() >8400) {
+                robot.arm.setTargetPosition(8400);
+                robot.arm.setPower(1);
+                robot.arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            }
 
             if(gamepad2.right_trigger > 0) {
                 robot.hand.setPower(1);

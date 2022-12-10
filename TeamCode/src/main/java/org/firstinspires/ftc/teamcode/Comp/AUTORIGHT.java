@@ -24,7 +24,6 @@ package org.firstinspires.ftc.teamcode.Comp;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -34,19 +33,18 @@ import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvInternalCamera;
 
 import java.util.ArrayList;
 
 @Autonomous
-public class RedAutoLeft extends LinearOpMode
+public class AUTORIGHT extends LinearOpMode
 {
 
     private ElapsedTime runtime = new ElapsedTime();
 
     //todo Put in hardwarebudget?
     static final double     COUNTS_PER_MOTOR_REV    = 2786.2 ;    // 5032 yellow jacket
-    static final double     DRIVE_GEAR_REDUCTION    = 99.5 ;     // No External Gearing.
+    static final double     DRIVE_GEAR_REDUCTION    = 1 ;     // No External Gearing.
     static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;     // For figuring circumference
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
             (WHEEL_DIAMETER_INCHES * 3.1415);
@@ -190,20 +188,24 @@ public class RedAutoLeft extends LinearOpMode
         /* ENCODER TRAJECTORIES (preferred) */
 
         if(tagOfInterest == null || tagOfInterest.id == tag1) {
+            scoreLowJunction();
             //Move FORWARD then RIGHT
-            linearDrive(1, 30, 30, 5);
-            armMove(1,lowHeight, 5 );
+            linearDrive(1, 16, 16, 5);
             strafeDrive(1, -10, -10, 5);
-            armMove(1, -lowHeight,5);
+            closeHand();
 
         }
         else if (tagOfInterest.id == tag2) {
+            scoreLowJunction();
             //MOVE FORWARD
             linearDrive(1, 30, 30, 5);
         }
         else {
-            linearDrive(1, 30, 30, 5);
-            strafeDrive(1, 20, 20, 5);
+            scoreLowJunction();
+            //Move FORWARD then RIGHT
+            linearDrive(1, 16, 16, 5);
+            strafeDrive(1, 10, 10, 5);
+            closeHand();
         }
 
 
@@ -307,6 +309,17 @@ public class RedAutoLeft extends LinearOpMode
         telemetry.addLine(String.format("Rotation Yaw: %.2f degrees", Math.toDegrees(detection.pose.yaw)));
         telemetry.addLine(String.format("Rotation Pitch: %.2f degrees", Math.toDegrees(detection.pose.pitch)));
         telemetry.addLine(String.format("Rotation Roll: %.2f degrees", Math.toDegrees(detection.pose.roll)));
+    }
+
+    void scoreLowJunction() {
+
+        strafeDrive(1,-12, -12,5);
+        linearDrive(1,5,5,5);
+        armMove(1,lowHeight, 5);
+        openHand();
+        armMove(1, -lowHeight,5);
+        linearDrive(1, -2,-2,2);
+        strafeDrive(1,-12, -12,5);
     }
 
     /*
