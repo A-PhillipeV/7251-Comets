@@ -4,6 +4,7 @@ package org.firstinspires.ftc.teamcode.Hardware;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -20,7 +21,7 @@ public class HardwareBudgetRobot {
 
     /* Public Opmode Members */
     public DcMotor motor1,motor2, motor3, motor4, arm;
-    public Servo hand;
+    public CRServo hand;
     BNO055IMU imu;
 
 
@@ -47,11 +48,9 @@ public class HardwareBudgetRobot {
 
         /* Intake Hardware */
         arm = myOpMode.hardwareMap.get(DcMotor.class, "Arm");
-        /*
-        hand = myOpMode.hardwareMap.get(Servo.class, "Hand");
-        hand.setPosition(0.0);
 
-         */
+        hand = myOpMode.hardwareMap.get(CRServo.class, "Hand");
+        hand.setPower(0.0);
 
         /* Gyros */
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();

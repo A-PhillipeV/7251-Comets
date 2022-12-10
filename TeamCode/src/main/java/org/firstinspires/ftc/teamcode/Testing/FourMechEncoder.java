@@ -54,6 +54,7 @@ public class FourMechEncoder extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+        robot.init();
 
         telemetry.addData("Starting at",  "%7d :%7d %7d :%7d",
                           robot.motor1.getCurrentPosition(),
@@ -64,15 +65,20 @@ public class FourMechEncoder extends LinearOpMode {
 
         waitForStart();
 
-        encoderDrive(DRIVE_SPEED,  48,  48, 5.0);  // S1: Forward 47 Inches with 5 Sec timeout
-        encoderDrive(DRIVE_SPEED, -24, -24, 4.0);  // S3: Reverse 24 Inches with 4 Sec timeout
+        linearDrive(DRIVE_SPEED, 48, 48, 5.0);
+        strafeDrive(DRIVE_SPEED,  48,  48, 5.0);
 
         telemetry.addData("Path", "Complete");
         telemetry.update();
         sleep(1000);  // pause to display final telemetry message.
     }
 
-    public void encoderDrive(double speed,
+
+    /*
+        Positive = RIGHT
+        Negative = LEFT
+     */
+    public void strafeDrive(double speed,
                              double leftInches, double rightInches,
                              double timeoutS) {
         int newMotor1Target;
@@ -113,6 +119,72 @@ public class FourMechEncoder extends LinearOpMode {
                 telemetry.addData("Running to",  " %7d :%7d", newMotor1Target,  newMotor3Target);
                 telemetry.addData("Currently at",  " at %7d :%7d",
                                             robot.motor1.getCurrentPosition(), robot.motor3.getCurrentPosition());
+                telemetry.update();
+            }
+
+            // Stop all motion;
+            robot.motor1.setPower(0);
+            robot.motor2.setPower(0);
+            robot.motor3.setPower(0);
+            robot.motor4.setPower(0);
+
+            // Turn off RUN_TO_POSITION
+            robot.motor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            robot.motor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            robot.motor3.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            robot.motor4.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+
+        }
+    }
+
+    /*
+        Positive: FORWARD
+        Negative: BACKWARDS
+     */
+    public void linearDrive(double speed,
+                            double leftInches, double rightInches,
+                            double timeoutS) {
+        int newMotor1Target;
+        int newMotor2Target;
+        int newMotor3Target;
+        int newMotor4Target;
+        leftInches *= -1;
+        rightInches *= -1;
+
+        // Ensure that the opmode is still active
+        if (opModeIsActive()) {
+
+            newMotor1Target = robot.motor1.getCurrentPosition() + (int)(leftInches * COUNTS_PER_INCH);
+            newMotor2Target = robot.motor2.getCurrentPosition() + (int)(leftInches * COUNTS_PER_INCH);
+            newMotor3Target = robot.motor3.getCurrentPosition() + (int)(rightInches * COUNTS_PER_INCH);
+            newMotor4Target = robot.motor4.getCurrentPosition() + (int)(rightInches * COUNTS_PER_INCH);
+            robot.motor1.setTargetPosition(-newMotor1Target);
+            robot.motor2.setTargetPosition(newMotor2Target);
+            robot.motor3.setTargetPosition(newMotor3Target);
+            robot.motor4.setTargetPosition(-newMotor4Target);
+
+
+            robot.motor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.motor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.motor3.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.motor4.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            // reset the timeout time and start motion.
+            runtime.reset();
+            robot.motor1.setPower(Math.abs(speed));
+            robot.motor2.setPower(Math.abs(speed));
+            robot.motor3.setPower(Math.abs(speed));
+            robot.motor4.setPower(Math.abs(speed));
+
+            while (opModeIsActive() &&
+                    (runtime.seconds() < timeoutS) &&
+                    (robot.motor1.isBusy() && robot.motor2.isBusy()) && (robot.motor3.isBusy() && robot.motor4.isBusy())) {
+
+                // Display it for the driver.
+                telemetry.addData("Running to",  " %7d :%7d", newMotor1Target,  newMotor3Target);
+                telemetry.addData("Currently at",  " at %7d :%7d",
+                        robot.motor1.getCurrentPosition(), robot.motor3.getCurrentPosition());
                 telemetry.update();
             }
 

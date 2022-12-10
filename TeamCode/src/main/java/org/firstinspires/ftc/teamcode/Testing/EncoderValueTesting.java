@@ -40,8 +40,9 @@ public class EncoderValueTesting extends LinearOpMode {
         // and then back down
 
         //Go to low height
-        armMove(1, lowHeight, 0); //position = 5800
-        armMove(1, -1*lowHeight, 0); //position = 0
+        closeHand();
+        sleep(2000);
+        openHand();
 
         while (opModeIsActive()) {
             telemetry.addData("Position", arm.getCurrentPosition());
@@ -55,6 +56,19 @@ public class EncoderValueTesting extends LinearOpMode {
 
 
 
+    }
+
+
+    public void openHand() {
+        hand.setPower(1);
+        sleep(1750);
+        hand.setPower(0);
+    }
+
+    public void closeHand() {
+        hand.setPower(-1);
+        sleep(1750);
+        hand.setPower(0);
     }
 
     public void armMove(double speed,
@@ -82,8 +96,8 @@ public class EncoderValueTesting extends LinearOpMode {
                     (arm.isBusy())) {
 
                 // Display it for the driver.
-                telemetry.addData("Running to", " %7d :%7d", newMotor1Target);
-                telemetry.addData("Currently at", " at %7d :%7d",
+                telemetry.addData("Running to", newMotor1Target);
+                telemetry.addData("Currently at",
                         arm.getCurrentPosition());
                 telemetry.update();
             }

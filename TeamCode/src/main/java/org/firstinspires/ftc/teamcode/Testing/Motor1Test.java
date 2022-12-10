@@ -32,16 +32,17 @@ package org.firstinspires.ftc.teamcode.Testing;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Hardware.HardwareBudgetRobot;
 
-@Autonomous(name="OneMechEncoder", group="Testing")
-public class OneMechEncoder extends LinearOpMode {
+@Autonomous(name="Motor1Testing", group="Testing")
+public class Motor1Test extends LinearOpMode {
 
     /* Declare OpMode members. */
-    HardwareBudgetRobot robot = new HardwareBudgetRobot(this);
 
+    DcMotor motor1;
     private ElapsedTime     runtime = new ElapsedTime();
 
     static final double     COUNTS_PER_MOTOR_REV    = 2786.2 ;    // 5032 yellow jacket
@@ -53,62 +54,17 @@ public class OneMechEncoder extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        robot.init();
+        motor1 = hardwareMap.get(DcMotor.class, "Motor 2");
+        //motor1.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        telemetry.addData("Starting at",  "%7d",
-                          robot.motor1.getCurrentPosition());
 
         telemetry.update();
 
         waitForStart();
 
-        encoderDrive(DRIVE_SPEED,  48);  // S1: Forward 47 Inches with 5 Sec timeout
-
-        telemetry.addData("Path", "Complete");
-        telemetry.update();
-        sleep(1000);  // pause to display final telemetry message.
-    }
-
-    public void encoderDrive(double speed,
-                             double leftInches/*,
-                             double timeoutS */) {
-        int newMotor1Target;
-
-        // Ensure that the opmode is still active
-        if (opModeIsActive()) {
-
-            newMotor1Target = robot.motor1.getCurrentPosition() + (int)(leftInches * COUNTS_PER_INCH);
-
-            robot.motor1.setTargetPosition(newMotor1Target);
-
-
-
-            robot.motor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-
-            // reset the timeout time and start motion.
-            runtime.reset();
-            robot.motor1.setPower(Math.abs(speed));
-
-
-            while (opModeIsActive() &&
-                   /*(runtime.seconds() < timeoutS) && */
-                   (robot.motor1.isBusy())) {
-
-                // Display it for the driver.
-                telemetry.addData("Running to",  " %7d :%7d", newMotor1Target);
-                telemetry.addData("Currently at",  " at %7d :%7d",
-                                            robot.motor1.getCurrentPosition());
-                telemetry.update();
-            }
-
-            // Stop all motion;
-            robot.motor1.setPower(0);
-
-
-            // Turn off RUN_TO_POSITION
-            robot.motor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
+        while(opModeIsActive()) {
+            motor1.setPower(1);
         }
     }
+
 }

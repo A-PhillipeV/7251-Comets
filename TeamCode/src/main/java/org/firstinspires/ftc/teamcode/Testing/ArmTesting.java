@@ -51,7 +51,7 @@ public class ArmTesting extends LinearOpMode {
             if(gamepad1.right_trigger > 0) {
                 hand.setPower(1);
             }
-            else if(gamepad1.left_trigger < 0) {
+            else if(gamepad1.left_trigger > 0) {
                 hand.setPower(-1);
             }
             else {

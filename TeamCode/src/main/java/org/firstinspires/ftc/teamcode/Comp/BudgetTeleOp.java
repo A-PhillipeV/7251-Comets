@@ -5,15 +5,20 @@
 package org.firstinspires.ftc.teamcode.Comp;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Hardware.HardwareBudgetRobot;
 
+@Config
 @TeleOp(name="BudgetTeleOp", group="Comp")
 public class BudgetTeleOp extends LinearOpMode {
 
     HardwareBudgetRobot robot = new HardwareBudgetRobot(this);
+    static final int lowHeight = 5800;
+    static final int middleHeight = 8400;
     @Override
     public void runOpMode() {
         robot.init();
@@ -30,9 +35,6 @@ public class BudgetTeleOp extends LinearOpMode {
             double rx = gamepad1.right_stick_x;
 
 
-            double armControl = gamepad2.right_stick_x;
-            double gripPower = gamepad2.right_trigger; //servo
-
             //int currentPosition = robot.arm.getCurrentPosition();
             //Servo to open/close hand
 
@@ -47,23 +49,10 @@ public class BudgetTeleOp extends LinearOpMode {
 
 
 
-            double throtte_control = .5;
+            double throtte_control = 1;
             double slowDown = 1;
             if(gamepad1.right_bumper)
-                slowDown -= 0.25;
-
-
-            /*
-            if(armControl == 1)
-                robot.arm.setPower(0.5);
-            else if(armControl == -1)
-                robot.arm.setPower(-0.5);
-            else {
-                robot.arm.setPower(0);
-                robot.arm.setTargetPosition(currentPosition);
-            }
-
-             */
+                slowDown -= 0.5;
 
             robot.motor1.setPower(frontLeftPower*throtte_control*slowDown);
             robot.motor2.setPower(backLeftPower*throtte_control*slowDown);
@@ -76,6 +65,33 @@ public class BudgetTeleOp extends LinearOpMode {
             telemetry.addData("frontRight:", frontRightPower);
             telemetry.addData("backRight:", backRightPower);
             telemetry.update();
+
+
+            if (gamepad2.y) {
+                robot.arm.setTargetPosition(middleHeight);
+                robot.arm.setPower(1);
+                robot.arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            } else if (gamepad2.x) {
+                robot.arm.setTargetPosition(lowHeight);
+                robot.arm.setPower(1);
+                robot.arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            } else if (gamepad2.a){
+                robot.arm.setTargetPosition(0);
+                robot.arm.setPower(1);
+                robot.arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            }
+
+            if(gamepad2.right_trigger > 0) {
+                robot.hand.setPower(1);
+            }
+            else if(gamepad2.left_trigger > 0) {
+                robot.hand.setPower(-1);
+            }
+            else {
+                robot.hand.setPower(0);
+            }
 
         }
     }
