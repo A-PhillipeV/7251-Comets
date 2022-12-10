@@ -16,6 +16,8 @@ public class ArmTesting extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
     DcMotor arm;
     CRServo hand;
+
+    final int groundHeight = 3200;
     final int lowHeight = 5800;
     final int middleHeight = 8400;
 
@@ -33,17 +35,32 @@ public class ArmTesting extends LinearOpMode {
 
         while(opModeIsActive()) {
             if (gamepad1.y) {
-                arm.setTargetPosition(middleHeight);
+                arm.setTargetPosition(lowHeight);
                 arm.setPower(power);
                 arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
             } else if (gamepad1.x) {
-                arm.setTargetPosition(lowHeight);
+                arm.setTargetPosition(groundHeight);
                 arm.setPower(power);
                 arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
             } else if (gamepad1.a){
                 arm.setTargetPosition(0);
+                arm.setPower(power);
+                arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            }
+            else if (gamepad1.b) {
+                arm.setTargetPosition(groundHeight);
+                arm.setPower(power);
+                arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            }
+            else if (gamepad1.left_stick_y * -1 > 0) {
+                arm.setTargetPosition(arm.getCurrentPosition() + 300);
+                arm.setPower(power);
+                arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            }
+            else if (gamepad1.left_stick_y * -1 < 0) {
+                arm.setTargetPosition(arm.getCurrentPosition() - 300);
                 arm.setPower(power);
                 arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             }

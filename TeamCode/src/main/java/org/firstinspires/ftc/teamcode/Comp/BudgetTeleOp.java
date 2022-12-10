@@ -18,7 +18,9 @@ public class BudgetTeleOp extends LinearOpMode {
 
     HardwareBudgetRobot robot = new HardwareBudgetRobot(this);
     static final int lowHeight = 5800;
-    static final int middleHeight = 8400;
+    static final int middleHeight = 8400; //:( unused
+    static final int groundHeight = 1500;
+
     @Override
     public void runOpMode() {
         robot.init();
@@ -67,18 +69,37 @@ public class BudgetTeleOp extends LinearOpMode {
             telemetry.update();
 
 
-            if (gamepad2.y) {
-                robot.arm.setTargetPosition(middleHeight);
-                robot.arm.setPower(1);
-                robot.arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-            } else if (gamepad2.x) {
+            /* INTAKE */
+            if (gamepad2.y) {
                 robot.arm.setTargetPosition(lowHeight);
                 robot.arm.setPower(1);
                 robot.arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-            } else if (gamepad2.a){
+            } else if (gamepad2.x) {
+                robot.arm.setTargetPosition(groundHeight);
+                robot.arm.setPower(1);
+                robot.arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            }
+            else if (gamepad2.b) {
+                robot.arm.setTargetPosition(groundHeight);
+                robot.arm.setPower(1);
+                robot.arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            }
+            else if (gamepad2.a){
                 robot.arm.setTargetPosition(0);
+                robot.arm.setPower(1);
+                robot.arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            }
+
+            else if (gamepad2.left_stick_y * -1 > 0) {
+                robot.arm.setTargetPosition(robot.arm.getCurrentPosition() + 300);
+                robot.arm.setPower(1);
+                robot.arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            }
+            else if (gamepad2.left_stick_y * -1 < 0) {
+                robot.arm.setTargetPosition(robot.arm.getCurrentPosition() - 300);
                 robot.arm.setPower(1);
                 robot.arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             }

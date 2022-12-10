@@ -189,8 +189,6 @@ public class RedAutoLeft extends LinearOpMode
         /* EDIT CODE BELOW: TRAJECTORY SEQUENCE */
         /* ENCODER TRAJECTORIES (preferred) */
 
-
-
         if(tagOfInterest == null || tagOfInterest.id == tag1) {
             //Move FORWARD then RIGHT
             linearDrive(1, 30, 30, 5);
@@ -491,6 +489,16 @@ public class RedAutoLeft extends LinearOpMode
     }
 
 
+    public void openHand() {
+        robot.hand.setPower(1);
+        sleep(1750);
+        robot.hand.setPower(0);
+    }
 
+    public void closeHand() {
+        robot.hand.setPower(-1);
+        sleep(1750);
+        robot.hand.setPower(0);
+    }
 
 }
