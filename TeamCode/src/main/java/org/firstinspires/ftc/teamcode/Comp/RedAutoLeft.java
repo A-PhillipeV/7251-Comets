@@ -193,19 +193,19 @@ public class RedAutoLeft extends LinearOpMode
 
         if(tagOfInterest == null || tagOfInterest.id == tag1) {
             //Move FORWARD then RIGHT
-            linearDrive(1, 35, 35, 5);
+            linearDrive(1, 30, 30, 5);
             armMove(1,lowHeight, 5 );
-            strafeDrive(1, 20, 20, 5);
+            strafeDrive(1, -10, -10, 5);
             armMove(1, -lowHeight,5);
 
         }
         else if (tagOfInterest.id == tag2) {
             //MOVE FORWARD
-            linearDrive(1, 35, 35, 5);
+            linearDrive(1, 30, 30, 5);
         }
         else {
-            linearDrive(1, 35, 35, 5);
-            strafeDrive(1, -20, -20, 5);
+            linearDrive(1, 30, 30, 5);
+            strafeDrive(1, 20, 20, 5);
         }
 
 
