@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.Hardware.HardwareBudgetRobot;
 public class BudgetTeleOp extends LinearOpMode {
 
     HardwareBudgetRobot robot = new HardwareBudgetRobot(this);
-    static final int lowHeight = 5800;
+    static final int lowHeight = 6500;
     static final int middleHeight = 8400; //:( unused
     static final int groundHeight = 1500;
 
@@ -109,10 +109,10 @@ public class BudgetTeleOp extends LinearOpMode {
                 robot.arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             }
 
-            if(gamepad2.right_trigger > 0) {
+            if(gamepad2.left_trigger > 0) {
                 robot.hand.setPower(1);
             }
-            else if(gamepad2.left_trigger > 0) {
+            else if(gamepad2.right_trigger > 0) {
                 robot.hand.setPower(-1);
             }
             else {

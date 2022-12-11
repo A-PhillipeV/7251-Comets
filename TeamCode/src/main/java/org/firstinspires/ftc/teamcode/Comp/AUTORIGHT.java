@@ -49,7 +49,7 @@ public class AUTORIGHT extends LinearOpMode
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
             (WHEEL_DIAMETER_INCHES * 3.1415);
     static final double     DRIVE_SPEED             = 0.6;
-    final int lowHeight = 5800;
+    final int lowHeight = 6500;
     final int middleHeight = 8400;
 
     OpenCvCamera camera;
@@ -185,28 +185,33 @@ public class AUTORIGHT extends LinearOpMode
         }
 
         /* EDIT CODE BELOW: TRAJECTORY SEQUENCE */
-        /* ENCODER TRAJECTORIES (preferred) */
+        // ENCODER TRAJECTORIES (preferred)
 
-        if(tagOfInterest == null || tagOfInterest.id == tag1) {
-            scoreLowJunction();
+        if(tagOfInterest == null || tagOfInterest.id == tag3) {
+
+            linearDrive(1, 6, 6, 2.45);
+            strafeDrive(1,2,-5,1.35);
+            linearDrive(1, 6, 6, 1.75);
+
             //Move FORWARD then RIGHT
-            linearDrive(1, 16, 16, 5);
-            strafeDrive(1, -10, -10, 5);
-            closeHand();
-
+            //strafeDrive(1, -10, -10, 5);`
         }
         else if (tagOfInterest.id == tag2) {
-            scoreLowJunction();
+            //scoreLowJunction();
             //MOVE FORWARD
-            linearDrive(1, 30, 30, 5);
+            linearDrive(1, 6, 6, 2.45);
+
         }
-        else {
-            scoreLowJunction();
+        else { //tag1
+            //scoreLowJunction();
             //Move FORWARD then RIGHT
-            linearDrive(1, 16, 16, 5);
-            strafeDrive(1, 10, 10, 5);
-            closeHand();
+
+
+            linearDrive(1, 6, 6, 2.45);
+            strafeDrive(1,-5,2,1.35);
+            linearDrive(1, 6, 6, 1.75);
         }
+
 
 
         /* SETPOWER TRAJECTORIES */
@@ -223,14 +228,14 @@ public class AUTORIGHT extends LinearOpMode
             double frontRightPower = (y - x) / denominator;
             double backRightPower = (y + x) / denominator;
 
-            double throtte_control = .6;
+            double throtte_control = 1;
 
             robot.motor1.setPower(frontLeftPower*throtte_control);
             robot.motor2.setPower(backLeftPower*throtte_control);
             robot.motor3.setPower(frontRightPower*throtte_control);
             robot.motor4.setPower(backRightPower*throtte_control);
 
-            sleep(1500);
+            sleep(6000);
 
             x = 1;
             y = 0;
@@ -241,7 +246,7 @@ public class AUTORIGHT extends LinearOpMode
             frontRightPower = (y - x) / denominator;
             backRightPower = (y + x) / denominator;
 
-            throtte_control = .25;
+            throtte_control = 1;
 
             robot.motor1.setPower(frontLeftPower*throtte_control);
             robot.motor2.setPower(backLeftPower*throtte_control);
@@ -263,7 +268,7 @@ public class AUTORIGHT extends LinearOpMode
             double frontRightPower = (y - x) / denominator;
             double backRightPower = (y + x) / denominator;
 
-            double throtte_control = .25;
+            double throtte_control = 1;
 
             robot.motor1.setPower(frontLeftPower*throtte_control);
             robot.motor2.setPower(backLeftPower*throtte_control);
@@ -284,7 +289,7 @@ public class AUTORIGHT extends LinearOpMode
             double frontRightPower = (y - x) / denominator;
             double backRightPower = (y + x) / denominator;
 
-            double throtte_control = .50;
+            double throtte_control = 1;
 
             robot.motor1.setPower(frontLeftPower*throtte_control);
             robot.motor2.setPower(backLeftPower*throtte_control);
@@ -296,9 +301,10 @@ public class AUTORIGHT extends LinearOpMode
             //CODE 3
 
         }
-        */
 
+*/
     }
+
 
     void tagToTelemetry(AprilTagDetection detection)
     {
@@ -312,13 +318,12 @@ public class AUTORIGHT extends LinearOpMode
     }
 
     void scoreLowJunction() {
-
+        linearDrive(1,1,1,5);
         strafeDrive(1,-12, -12,5);
-        linearDrive(1,5,5,5);
         armMove(1,lowHeight, 5);
         openHand();
         armMove(1, -lowHeight,5);
-        linearDrive(1, -2,-2,2);
+        linearDrive(1, -1,-1,2);
         strafeDrive(1,-12, -12,5);
     }
 
@@ -328,7 +333,7 @@ public class AUTORIGHT extends LinearOpMode
  */
     public void strafeDrive(double speed,
                             double leftInches, double rightInches,
-                            double timeoutS) {
+                            double timeoutS ) {
         int newMotor1Target;
         int newMotor2Target;
         int newMotor3Target;
@@ -355,7 +360,7 @@ public class AUTORIGHT extends LinearOpMode
             // reset the timeout time and start motion.
             runtime.reset();
             robot.motor1.setPower(Math.abs(speed));
-            robot.motor2.setPower(Math.abs(speed));
+            robot.motor2.setPower(1);
             robot.motor3.setPower(Math.abs(speed));
             robot.motor4.setPower(Math.abs(speed));
 

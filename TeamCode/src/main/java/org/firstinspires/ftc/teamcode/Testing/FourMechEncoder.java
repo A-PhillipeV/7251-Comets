@@ -65,7 +65,7 @@ public class FourMechEncoder extends LinearOpMode {
 
         waitForStart();
 
-        linearDrive(DRIVE_SPEED, 48, 48, 5.0);
+        linearDrive(DRIVE_SPEED, 48, 48, 6.0);
         strafeDrive(DRIVE_SPEED,  48,  48, 5.0);
 
         telemetry.addData("Path", "Complete");
