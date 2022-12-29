@@ -198,95 +198,7 @@ public class AUTORIGHT extends LinearOpMode
 
 
 
-        /* SETPOWER TRAJECTORIES */
-        /*
-        if(tagOfInterest == null || tagOfInterest.id == tag1){
 
-            //Move Forward then Right
-            double x = -1;
-            double y = 1;
-
-            double denominator = Math.max(Math.abs(y) + Math.abs(x), 1);
-            double frontLeftPower = (y + x) / denominator;
-            double backLeftPower = (y - x) / denominator;
-            double frontRightPower = (y - x) / denominator;
-            double backRightPower = (y + x) / denominator;
-
-            double throtte_control = 1;
-
-            robot.motor1.setPower(frontLeftPower*throtte_control);
-            robot.motor2.setPower(backLeftPower*throtte_control);
-            robot.motor3.setPower(frontRightPower*throtte_control);
-            robot.motor4.setPower(backRightPower*throtte_control);
-
-            sleep(6000);
-
-            x = 1;
-            y = 0;
-            // Move Forward
-            denominator = Math.max(Math.abs(y) + Math.abs(x), 1);
-            frontLeftPower = (y + x) / denominator;
-            backLeftPower = (y - x) / denominator;
-            frontRightPower = (y - x) / denominator;
-            backRightPower = (y + x) / denominator;
-
-            throtte_control = 1;
-
-            robot.motor1.setPower(frontLeftPower*throtte_control);
-            robot.motor2.setPower(backLeftPower*throtte_control);
-            robot.motor3.setPower(frontRightPower*throtte_control);
-            robot.motor4.setPower(backRightPower*throtte_control);
-            sleep(2000);
-
-
-
-            //Move Forward
-        }else if(tagOfInterest.id == tag2){
-            //trajectory X & Y MIGHT BE SWAPPED ;) :P B0101101
-            double x = 1; //WORKS
-            double y = 0; //WORKS
-
-            double denominator = Math.max(Math.abs(y) + Math.abs(x), 1);
-            double frontLeftPower = (y + x) / denominator;
-            double backLeftPower = (y - x) / denominator;
-            double frontRightPower = (y - x) / denominator;
-            double backRightPower = (y + x) / denominator;
-
-            double throtte_control = 1;
-
-            robot.motor1.setPower(frontLeftPower*throtte_control);
-            robot.motor2.setPower(backLeftPower*throtte_control);
-            robot.motor3.setPower(frontRightPower*throtte_control);
-            robot.motor4.setPower(backRightPower*throtte_control);
-
-            sleep(2000);
-
-        }else if(tagOfInterest.id == tag3){
-            //trajectory
-            //Move Forward then Left
-            double x = 1; // works
-            double y = -1; // works
-
-            double denominator = Math.max(Math.abs(y) + Math.abs(x), 1);
-            double frontLeftPower = (y + x) / denominator;
-            double backLeftPower = (y - x) / denominator;
-            double frontRightPower = (y - x) / denominator;
-            double backRightPower = (y + x) / denominator;
-
-            double throtte_control = 1;
-
-            robot.motor1.setPower(frontLeftPower*throtte_control);
-            robot.motor2.setPower(backLeftPower*throtte_control);
-            robot.motor3.setPower(frontRightPower*throtte_control);
-            robot.motor4.setPower(backRightPower*throtte_control);
-
-            sleep(1700);
-
-            //CODE 3
-
-        }
-
-*/
     }
 
 
@@ -302,7 +214,7 @@ public class AUTORIGHT extends LinearOpMode
     }
 
     void scoreMediumJunction() {
-        strafeDrive(.2,8);
+        strafeDrive(.2,8 , true);
 
 
     }
@@ -313,11 +225,16 @@ public class AUTORIGHT extends LinearOpMode
     Negative = LEFT
     */
     public void strafeDrive(double speed,
-                            int target) {
+                            int target, boolean right) {
         int newMotor1Target;
         int newMotor2Target;
         int newMotor3Target;
         int newMotor4Target;
+
+        double frontLeftPower;
+        double frontRightPower;
+        double backLeftPower;
+        double backRightPower;
 
         robot.motor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.motor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -341,10 +258,28 @@ public class AUTORIGHT extends LinearOpMode
 
             // reset the timeout time and start motion.  (these values are for strafing right)
             runtime.reset();
-            robot.motor1.setPower(0);
-            robot.motor2.setPower(speed*-1);
-            robot.motor3.setPower(speed);
-            robot.motor4.setPower(0);
+
+            if(right == true) //strafe right
+            {
+                frontLeftPower = 0;
+                frontRightPower = speed * -1;
+                backLeftPower = speed;
+                backRightPower = 0;
+            }
+
+            else //strafe left
+            {
+                frontLeftPower = 0;
+                frontRightPower = speed;
+                backLeftPower = speed * -1;
+                backRightPower = 0;
+            }
+
+            robot.motor1.setPower(frontLeftPower);
+            robot.motor2.setPower(frontRightPower);
+            robot.motor3.setPower(backLeftPower);
+            robot.motor4.setPower(backRightPower);
+
 
             while (opModeIsActive() &&
                     (robot.motor1.isBusy() && robot.motor2.isBusy()) && (robot.motor3.isBusy() && robot.motor4.isBusy())) {
