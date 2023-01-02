@@ -51,7 +51,7 @@ public class BudgetTeleOp extends LinearOpMode {
 
 
 
-            double throtte_control = 1;
+            double throtte_control = 0.5;
             double slowDown = 1;
             if(gamepad1.right_bumper)
                 slowDown -= 0.5;

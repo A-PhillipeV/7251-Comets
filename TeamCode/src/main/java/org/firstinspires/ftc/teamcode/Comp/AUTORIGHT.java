@@ -236,10 +236,7 @@ public class AUTORIGHT extends LinearOpMode
         double backLeftPower;
         double backRightPower;
 
-        robot.motor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.motor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.motor3.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.motor4.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
 
         // Ensure that the opmode is still active
         if (opModeIsActive()) {
@@ -253,7 +250,10 @@ public class AUTORIGHT extends LinearOpMode
             robot.motor3.setTargetPosition(newMotor3Target);
             robot.motor4.setTargetPosition(newMotor4Target);
 
-
+            robot.motor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.motor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.motor3.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.motor4.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
 
             // reset the timeout time and start motion.  (these values are for strafing right)
