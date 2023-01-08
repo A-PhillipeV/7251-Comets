@@ -22,6 +22,7 @@
 package org.firstinspires.ftc.teamcode.Comp;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -35,9 +36,9 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.ArrayList;
-
+@Config
 @Autonomous
-public class AUTORIGHT extends LinearOpMode
+public class BudgetAutonomous extends LinearOpMode
 {
 
     private ElapsedTime runtime = new ElapsedTime();
@@ -50,6 +51,8 @@ public class AUTORIGHT extends LinearOpMode
     static final double     DRIVE_SPEED             = 0.6;
     final int lowHeight = 6500;
     final int middleHeight = 8400;
+
+    static double targetPosition;
 
     OpenCvCamera camera;
     AprilTagDetectionPipeline aprilTagDetectionPipeline;
@@ -186,14 +189,19 @@ public class AUTORIGHT extends LinearOpMode
         /* EDIT CODE BELOW: TRAJECTORY SEQUENCE */
         // ENCODER TRAJECTORIES (preferred)
 
-        if(tagOfInterest == null || tagOfInterest.id == tag3) {
-            scoreMediumJunction();
-        }
-        else if (tagOfInterest.id == tag2) {
-
+        if( tagOfInterest.id == tag1) {
+            //scoreMediumJunction();
+            ParkOne();
 
         }
-        else { //tag1
+        else if (tagOfInterest == null ||tagOfInterest.id == tag2) {
+            //scoreMediumJunction();
+            ParkTwo();
+
+        }
+        else { //tag3
+            //scoreMediumJunction();
+            ParkThree();
         }
 
 
@@ -214,9 +222,43 @@ public class AUTORIGHT extends LinearOpMode
     }
 
     void scoreMediumJunction() {
-        strafeDrive(.2,8 , true);
+        closeHand();
+        armMove(0.15, -200); // raise it a teensy bit
+    /*    linearDrive(0.15,5); //forward
+        strafeDrive(0.15, -29.4); //left (go around ground junction)
+        linearDrive(0.15, 25); //forward
+        strafeDrive(0.15, 14.9); //right
+        sleep(100);
+        linearDrive(0.05, 5.5); //forward a teensy bit
+        sleep(1000);
+        linearDrive(0.10, -5.5); //back a teensy bit
+*/
+        /*
+        linearDrive(0.10, 30);
+        strafeDrive(.10,-14.7);
+        sleep(1000);
+        linearDrive(0.05, 5.5);
+        sleep(1000);
+        linearDrive(0.10, -5.5);
+        */
 
 
+
+    }
+
+    void ParkOne() {
+        linearDrive(0.25, 5);
+        strafeDrive(0.25, -25); //left a little bit
+        linearDrive(0.25, 25); //park forward
+    }
+    void ParkTwo(){
+        linearDrive(0.25, 30); //move forward
+    }
+    void ParkThree(){
+        linearDrive(0.25, 5);
+        strafeDrive(0.25, 30);
+        linearDrive(0.25, 25); //move forward
+         //strafe all the way right
     }
 
 
@@ -225,7 +267,7 @@ public class AUTORIGHT extends LinearOpMode
     Negative = LEFT
     */
     public void strafeDrive(double speed,
-                            int target, boolean right) {
+                            double target) {
         int newMotor1Target;
         int newMotor2Target;
         int newMotor3Target;
@@ -235,16 +277,20 @@ public class AUTORIGHT extends LinearOpMode
         double frontRightPower;
         double backLeftPower;
         double backRightPower;
+        robot.motor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.motor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.motor3.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.motor4.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
 
+        newMotor2Target = robot.motor2.getCurrentPosition() + (int)(target * COUNTS_PER_INCH);
+        newMotor1Target = robot.motor1.getCurrentPosition() + (int)(target * COUNTS_PER_INCH);
+        newMotor3Target = robot.motor3.getCurrentPosition() + (int)(target * COUNTS_PER_INCH);
+        newMotor4Target = robot.motor4.getCurrentPosition() + (int)(target * COUNTS_PER_INCH);
 
         // Ensure that the opmode is still active
         if (opModeIsActive()) {
 
-            newMotor1Target = robot.motor1.getCurrentPosition() + (int)(target * COUNTS_PER_INCH);
-            newMotor2Target = robot.motor2.getCurrentPosition() + (int)(target * COUNTS_PER_INCH);
-            newMotor3Target = robot.motor3.getCurrentPosition() + (int)(target * COUNTS_PER_INCH);
-            newMotor4Target = robot.motor4.getCurrentPosition() + (int)(target * COUNTS_PER_INCH);
             robot.motor1.setTargetPosition(newMotor1Target);
             robot.motor2.setTargetPosition(newMotor2Target);
             robot.motor3.setTargetPosition(newMotor3Target);
@@ -259,21 +305,11 @@ public class AUTORIGHT extends LinearOpMode
             // reset the timeout time and start motion.  (these values are for strafing right)
             runtime.reset();
 
-            if(right == true) //strafe right
-            {
-                frontLeftPower = 0;
-                frontRightPower = speed * -1;
-                backLeftPower = speed;
-                backRightPower = 0;
-            }
 
-            else //strafe left
-            {
-                frontLeftPower = 0;
-                frontRightPower = speed;
-                backLeftPower = speed * -1;
-                backRightPower = 0;
-            }
+            frontLeftPower = speed;
+            frontRightPower = speed * -1;
+            backLeftPower = speed*-1;
+            backRightPower = speed;
 
             robot.motor1.setPower(frontLeftPower);
             robot.motor2.setPower(frontRightPower);
@@ -285,9 +321,10 @@ public class AUTORIGHT extends LinearOpMode
                     (robot.motor1.isBusy() && robot.motor2.isBusy()) && (robot.motor3.isBusy() && robot.motor4.isBusy())) {
 
                 // Display it for the driver.
-                telemetry.addData("Running to",  " %7d :%7d", newMotor1Target,  newMotor3Target);
-                telemetry.addData("Currently at",  " at %7d :%7d",
-                        robot.motor1.getCurrentPosition(), robot.motor3.getCurrentPosition());
+                telemetry.addData("Running to (STRAFE DRIVE)",  "Motor 1: %7d Motor 2: %7d Motor 3: %7d Motor 4: %7d",
+                        newMotor1Target, newMotor2Target, newMotor3Target, newMotor4Target);
+                telemetry.addData("Currently at (STRAFE DRIVE)",  "Motor 1: %7d Motor 2: %7d Motor 3: %7d Motor 4: %7d",
+                        robot.motor1.getCurrentPosition(), robot.motor2.getCurrentPosition(), robot.motor3.getCurrentPosition(), robot.motor4.getCurrentPosition());
                 telemetry.update();
             }
 
@@ -296,6 +333,8 @@ public class AUTORIGHT extends LinearOpMode
             robot.motor2.setPower(0);
             robot.motor3.setPower(0);
             robot.motor4.setPower(0);
+
+            sleep(500);
 
         }
     }
@@ -305,48 +344,65 @@ public class AUTORIGHT extends LinearOpMode
         Negative: BACKWARDS
      */
     public void linearDrive(double speed,
-                            double leftInches, double rightInches,
-                            double timeoutS) {
+                            double target) {
         int newMotor1Target;
         int newMotor2Target;
         int newMotor3Target;
         int newMotor4Target;
-        leftInches *= -1;
-        rightInches *= -1;
+
+        double frontLeftPower;
+        double frontRightPower;
+        double backLeftPower;
+        double backRightPower;
+
+        robot.motor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.motor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.motor3.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.motor4.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+
+        newMotor2Target = robot.motor2.getCurrentPosition() + (int)(target * COUNTS_PER_INCH);
+        newMotor1Target = robot.motor1.getCurrentPosition() + (int)(target * COUNTS_PER_INCH);
+        newMotor3Target = robot.motor3.getCurrentPosition() + (int)(target * COUNTS_PER_INCH);
+        newMotor4Target = robot.motor4.getCurrentPosition() + (int)(target * COUNTS_PER_INCH);
 
         // Ensure that the opmode is still active
         if (opModeIsActive()) {
 
-            newMotor1Target = robot.motor1.getCurrentPosition() + (int)(leftInches * COUNTS_PER_INCH);
-            newMotor2Target = robot.motor2.getCurrentPosition() + (int)(leftInches * COUNTS_PER_INCH);
-            newMotor3Target = robot.motor3.getCurrentPosition() + (int)(rightInches * COUNTS_PER_INCH);
-            newMotor4Target = robot.motor4.getCurrentPosition() + (int)(rightInches * COUNTS_PER_INCH);
-            robot.motor1.setTargetPosition(-newMotor1Target);
-            robot.motor2.setTargetPosition(newMotor2Target);
-            robot.motor3.setTargetPosition(newMotor3Target);
-            robot.motor4.setTargetPosition(-newMotor4Target);
-
+            robot.motor1.setTargetPosition(newMotor1Target);
+            robot.motor2.setTargetPosition(-1*newMotor2Target);
+            robot.motor3.setTargetPosition(-1*newMotor3Target);
+            robot.motor4.setTargetPosition(newMotor4Target);
 
             robot.motor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.motor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.motor3.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.motor4.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-            // reset the timeout time and start motion.
+
+            // reset the timeout time and start motion.  (these values are for strafing right)
             runtime.reset();
-            robot.motor1.setPower(Math.abs(speed));
-            robot.motor2.setPower(Math.abs(speed));
-            robot.motor3.setPower(Math.abs(speed));
-            robot.motor4.setPower(Math.abs(speed));
+
+
+            frontLeftPower = speed;
+            frontRightPower = speed;
+            backLeftPower = speed;
+            backRightPower = speed;
+
+            robot.motor1.setPower(frontLeftPower);
+            robot.motor2.setPower(frontRightPower);
+            robot.motor3.setPower(backLeftPower);
+            robot.motor4.setPower(backRightPower);
+
 
             while (opModeIsActive() &&
-                    (runtime.seconds() < timeoutS) &&
                     (robot.motor1.isBusy() && robot.motor2.isBusy()) && (robot.motor3.isBusy() && robot.motor4.isBusy())) {
 
                 // Display it for the driver.
-                telemetry.addData("Running to",  " %7d :%7d", newMotor1Target,  newMotor3Target);
-                telemetry.addData("Currently at",  " at %7d :%7d",
-                        robot.motor1.getCurrentPosition(), robot.motor3.getCurrentPosition());
+                telemetry.addData("Running to (LINEAR DRIVE)",  "Motor 1: %7d Motor 2: %7d Motor 3: %7d Motor 4: %7d",
+                        newMotor1Target, newMotor2Target, newMotor3Target, newMotor4Target);
+                telemetry.addData("Currently at (LINEAR DRIVE)",  "Motor 1: %7d Motor 2: %7d Motor 3: %7d Motor 4: %7d",
+                        robot.motor1.getCurrentPosition(), robot.motor2.getCurrentPosition(), robot.motor3.getCurrentPosition(), robot.motor4.getCurrentPosition());
                 telemetry.update();
             }
 
@@ -356,11 +412,6 @@ public class AUTORIGHT extends LinearOpMode
             robot.motor3.setPower(0);
             robot.motor4.setPower(0);
 
-            // Turn off RUN_TO_POSITION
-            robot.motor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            robot.motor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            robot.motor3.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            robot.motor4.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
     }
 
@@ -375,14 +426,12 @@ public class AUTORIGHT extends LinearOpMode
       armMove(1, -500, 5); //Moves back to 0 ticks
      */
     public void armMove(double speed,
-                        int target,
-                        double timeoutS) {
+                        int target){
         int newMotor1Target;
-
+        robot.arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        newMotor1Target = robot.arm.getCurrentPosition() + target;
         // Ensure that the opmode is still active
         if (opModeIsActive()) {
-
-            newMotor1Target = robot.arm.getCurrentPosition() + target;
 
             robot.arm.setTargetPosition(newMotor1Target);
 
@@ -395,7 +444,6 @@ public class AUTORIGHT extends LinearOpMode
 
 
             while (opModeIsActive() &&
-                    (runtime.seconds() < timeoutS) &&
                     (robot.arm.isBusy())) {
 
                 // Display it for the driver.
@@ -417,13 +465,13 @@ public class AUTORIGHT extends LinearOpMode
 
 
     public void openHand() {
-        robot.hand.setPower(1);
+        robot.hand.setPower(-1);
         sleep(1750);
         robot.hand.setPower(0);
     }
 
     public void closeHand() {
-        robot.hand.setPower(-1);
+        robot.hand.setPower(1);
         sleep(1750);
         robot.hand.setPower(0);
     }

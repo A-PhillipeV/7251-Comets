@@ -18,6 +18,7 @@ public class MotorEncoderTest extends LinearOpMode {
     DcMotor motor2;
     DcMotor motor3;
     DcMotor motor4;
+    DcMotor arm;
 
     @Override
     public void runOpMode() {
@@ -25,6 +26,7 @@ public class MotorEncoderTest extends LinearOpMode {
         motor2 = hardwareMap.get(DcMotor.class, "Motor 2");
         motor3 = hardwareMap.get(DcMotor.class, "Motor 3");
         motor4 = hardwareMap.get(DcMotor.class, "Motor 4");
+        arm = hardwareMap.get(DcMotor.class, "Arm");
 
         waitForStart();
 
@@ -35,6 +37,8 @@ public class MotorEncoderTest extends LinearOpMode {
             telemetry.addData("Position 3", motor3.getCurrentPosition());
 
             telemetry.addData("Position 4", motor4.getCurrentPosition());
+
+            telemetry.addData("Position Arm", arm.getCurrentPosition());
 
             telemetry.update();
         }
