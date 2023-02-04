@@ -29,6 +29,8 @@ import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigu
 import org.firstinspires.ftc.teamcode.RoadRunner.drive.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.RoadRunner.drive.trajectorysequence.TrajectorySequenceBuilder;
 import org.firstinspires.ftc.teamcode.RoadRunner.drive.trajectorysequence.TrajectorySequenceRunner;
+import org.firstinspires.ftc.teamcode.RoadRunner.drive.util.AxisDirection;
+import org.firstinspires.ftc.teamcode.RoadRunner.drive.util.BNO055IMUUtil;
 import org.firstinspires.ftc.teamcode.RoadRunner.drive.util.LynxModuleUtil;
 
 import java.util.ArrayList;
@@ -52,10 +54,10 @@ import static org.firstinspires.ftc.teamcode.RoadRunner.drive.DriveConstants.kV;
  */
 @Config
 public class SampleMecanumDrive extends MecanumDrive {
-    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(0, 0, 0);
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(0, 0, 0);
+    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(1.3, 0, 0);
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(8, 0, 0);
 
-    public static double LATERAL_MULTIPLIER = 1;
+    public static double LATERAL_MULTIPLIER = 0.974;
 
     public static double VX_WEIGHT = 1;
     public static double VY_WEIGHT = 1;
@@ -114,12 +116,12 @@ public class SampleMecanumDrive extends MecanumDrive {
         // and the placement of the dot/orientation from https://docs.revrobotics.com/rev-control-system/control-system-overview/dimensions#imu-location
         //
         // For example, if +Y in this diagram faces downwards, you would use AxisDirection.NEG_Y.
-        // BNO055IMUUtil.remapZAxis(imu, AxisDirection.NEG_Y);
+        BNO055IMUUtil.remapZAxis(imu, AxisDirection.NEG_X);
 
-        leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
-        leftRear = hardwareMap.get(DcMotorEx.class, "leftRear");
-        rightRear = hardwareMap.get(DcMotorEx.class, "rightRear");
-        rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
+        leftFront = hardwareMap.get(DcMotorEx.class, "Motor 1");
+        rightFront = hardwareMap.get(DcMotorEx.class, "Motor 2");
+        leftRear = hardwareMap.get(DcMotorEx.class, "Motor 3");
+        rightRear = hardwareMap.get(DcMotorEx.class, "Motor 4");
 
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
 
@@ -140,6 +142,8 @@ public class SampleMecanumDrive extends MecanumDrive {
         }
 
         // TODO: reverse any motors using DcMotor.setDirection()
+        leftFront.setDirection(DcMotor.Direction.REVERSE);
+        leftRear.setDirection(DcMotor.Direction.REVERSE);
 
         // TODO: if desired, use setLocalizer() to change the localization method
         // for instance, setLocalizer(new ThreeTrackingWheelLocalizer(...));
@@ -298,6 +302,8 @@ public class SampleMecanumDrive extends MecanumDrive {
 
     @Override
     public Double getExternalHeadingVelocity() {
+
+        //TODO:CHECK!
         return (double) imu.getAngularVelocity().zRotationRate;
     }
 

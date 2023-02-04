@@ -343,6 +343,54 @@ public class BudgetAutonomous extends LinearOpMode
         Positive: FORWARD
         Negative: BACKWARDS
      */
+
+    /*
+      Moves the arm up and down to a specific height
+      NOTE: If going back to orignal position, the new "setTargetPosition" value should be negative
+      of the previous encoder ticks
+
+      i.e
+      armMove(1, 500, 5); //Moves to 500 ticks
+      armMove(1, -500, 5); //Moves back to 0 ticks
+     */
+
+    public void armMove(double speed,
+                        int target){
+        int newMotor1Target;
+        robot.arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        newMotor1Target = robot.arm.getCurrentPosition() + target;
+        // Ensure that the opmode is still active
+        if (opModeIsActive()) {
+
+            robot.arm.setTargetPosition(newMotor1Target);
+
+            robot.arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+
+            // reset the timeout time and start motion.
+            runtime.reset();
+            robot.arm.setPower(Math.abs(speed));
+
+
+            while (opModeIsActive() &&
+                    (robot.arm.isBusy())) {
+
+                // Display it for the driver.
+                telemetry.addData("Running to", newMotor1Target);
+                telemetry.addData("Currently at",
+                        robot.arm.getCurrentPosition());
+                telemetry.update();
+            }
+
+            // Stop all motion;
+            robot.arm.setPower(0);
+
+
+            // Turn off RUN_TO_POSITION
+            robot.arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        }
+    }
     public void linearDrive(double speed,
                             double target) {
         int newMotor1Target;
@@ -411,54 +459,6 @@ public class BudgetAutonomous extends LinearOpMode
             robot.motor2.setPower(0);
             robot.motor3.setPower(0);
             robot.motor4.setPower(0);
-
-        }
-    }
-
-
-    /*
-      Moves the arm up and down to a specific height
-      NOTE: If going back to orignal position, the new "setTargetPosition" value should be negative
-      of the previous encoder ticks
-
-      i.e
-      armMove(1, 500, 5); //Moves to 500 ticks
-      armMove(1, -500, 5); //Moves back to 0 ticks
-     */
-    public void armMove(double speed,
-                        int target){
-        int newMotor1Target;
-        robot.arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        newMotor1Target = robot.arm.getCurrentPosition() + target;
-        // Ensure that the opmode is still active
-        if (opModeIsActive()) {
-
-            robot.arm.setTargetPosition(newMotor1Target);
-
-            robot.arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-
-            // reset the timeout time and start motion.
-            runtime.reset();
-            robot.arm.setPower(Math.abs(speed));
-
-
-            while (opModeIsActive() &&
-                    (robot.arm.isBusy())) {
-
-                // Display it for the driver.
-                telemetry.addData("Running to", newMotor1Target);
-                telemetry.addData("Currently at",
-                        robot.arm.getCurrentPosition());
-                telemetry.update();
-            }
-
-            // Stop all motion;
-            robot.arm.setPower(0);
-
-
-            // Turn off RUN_TO_POSITION
-            robot.arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         }
     }

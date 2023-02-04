@@ -17,10 +17,7 @@ import org.firstinspires.ftc.teamcode.Hardware.HardwareBudgetRobot;
 public class BudgetTeleOp extends LinearOpMode {
 
     HardwareBudgetRobot robot = new HardwareBudgetRobot(this);
-    static final int lowHeight = -1376;
-    static final int mediumHeight = -2150;
-    static final int groundHeight = -200;
-    static final int floorHeight = 0;
+    static final int maxHeight = -2150;
 
     @Override
     public void runOpMode() {
@@ -29,6 +26,7 @@ public class BudgetTeleOp extends LinearOpMode {
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
+        robot.arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         waitForStart();
         while (opModeIsActive()) {
@@ -71,40 +69,24 @@ public class BudgetTeleOp extends LinearOpMode {
 
 
             /* INTAKE */
-            if (gamepad2.y) {
-                robot.arm.setTargetPosition(lowHeight);
-                robot.arm.setPower(.5);
-                robot.arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-            } else if (gamepad2.a) {
-                robot.arm.setTargetPosition(floorHeight);
-                robot.arm.setPower(.5);
-                robot.arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-            }
-            else if (gamepad2.x) {
-                robot.arm.setTargetPosition(groundHeight);
-                robot.arm.setPower(.5);
-                robot.arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            }
-            else if (gamepad2.b){
-                robot.arm.setTargetPosition(lowHeight);
-                robot.arm.setPower(.5);
-                robot.arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            }
-            else if (gamepad2.y) {
-                robot.arm.setTargetPosition(mediumHeight);
-                robot.arm.setPower(.5);
-                robot.arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            }
-            else if (gamepad2.left_stick_y * -1 > 0) { //up
-                robot.arm.setTargetPosition(robot.arm.getCurrentPosition() - 50);
-                robot.arm.setPower(.5);
+            if (gamepad2.left_stick_y * -1 > 0) { //up
+                robot.arm.setTargetPosition(robot.arm.getCurrentPosition() - 100);
+                robot.arm.setPower(.75);
                 robot.arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             }
             else if (gamepad2.left_stick_y * -1 < 0) { //down
-                robot.arm.setTargetPosition(robot.arm.getCurrentPosition() + 40);
+                robot.arm.setTargetPosition(robot.arm.getCurrentPosition() + 50);
                 robot.arm.setPower(.5);
+                robot.arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            }
+            else if (robot.arm.getCurrentPosition() < -2175) {
+                robot.arm.setTargetPosition(-2150);
+                robot.arm.setPower(.5); //TODO: change?
+                robot.arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            }
+            else if (robot.arm.getCurrentPosition() > 25) {
+                robot.arm.setTargetPosition(0);
+                robot.arm.setPower(.5); //TODO: change?
                 robot.arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             }
 
