@@ -23,11 +23,21 @@ import org.firstinspires.ftc.teamcode.RoadRunner.drive.trajectorysequence.Trajec
 public class RoadRunnerTesting extends LinearOpMode {
     DcMotor arm;
     CRServo hand;
+    DcMotor m1;
+    DcMotor m2;
+    DcMotor m3;
+    DcMotor m4;
 
     @Override
     public void runOpMode() throws InterruptedException {
         arm = hardwareMap.get(DcMotor.class, "Arm");
         hand = hardwareMap.get(CRServo.class, "Hand");
+
+        m1 = hardwareMap.get(DcMotor.class, "Motor 1");
+        m2 = hardwareMap.get(DcMotor.class, "Motor 2");
+        m3 = hardwareMap.get(DcMotor.class, "Motor 3");
+        m4 = hardwareMap.get(DcMotor.class, "Motor 4");
+
         Telemetry telemetry = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
 
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
@@ -51,16 +61,19 @@ public class RoadRunnerTesting extends LinearOpMode {
 
 
         Trajectory trajectory1 = drive.trajectoryBuilder(new Pose2d())
-                .lineToLinearHeading(new Pose2d(47,0, Math.toRadians(90)))
-                .addDisplacementMarker(() -> {
-                    linearDrive(0.4, 2000);
-                })
-
+                .strafeRight(16)
                 .build();
 
         Trajectory trajectory2 = drive.trajectoryBuilder(trajectory1.end())
-                .forward(3)
+                .forward(32)
                 .build();
+        Trajectory trajectory3 = drive.trajectoryBuilder(trajectory2.end())
+                .strafeRight(8)
+                .build();
+        Trajectory trajectory4 = drive.trajectoryBuilder(trajectory3.end())
+                .lineToLinearHeading(new Pose2d(-2,0, Math.toRadians(-90)))
+                .build();
+
 
 
 
@@ -70,12 +83,12 @@ public class RoadRunnerTesting extends LinearOpMode {
 
         //actual movement starts here
         closeHand();
-        linearDrive(0.5, 300);
+        armMove(0.75, 1200);
         drive.followTrajectory(trajectory1);
-        drive.followTrajectory(trajectory2);//moves to junction
+        drive.followTrajectory(trajectory2);
         openHand();
-        //Move arm up and score
-
+        drive.followTrajectory(trajectory3);
+        drive.followTrajectory(trajectory4);
 
 
 
@@ -89,7 +102,7 @@ public class RoadRunnerTesting extends LinearOpMode {
     }
 
 
-    public void linearDrive(double speed,
+    public void armMove(double speed,
                             double target) {
         int newArmTarget;
 
@@ -103,6 +116,10 @@ public class RoadRunnerTesting extends LinearOpMode {
         if (opModeIsActive()) {
 
             arm.setTargetPosition(-newArmTarget);
+            m1.setPower(0);
+            m2.setPower(0);
+            m3.setPower(0);
+            m4.setPower(0);
 
             arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
