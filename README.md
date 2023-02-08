@@ -24,8 +24,10 @@ For step 7, go to "Device File Explorer," and go through SD card.
 __For 2022-2023 season, we use april-codes for detection. Research more on EasyOpenCV!__  
 For april-codes, follow guide on: https://github.com/OpenFTC/EOCV-AprilTag-Plugin
 
-## Road Runner:
-Follow instructions on: https://learnroadrunner.com/   
+## Road Runner/Meep Meep:
+Follow instructions on: https://learnroadrunner.com/, and find MeepMeep. 
+MAKE SURE TO TUNE THE ROBOT AFTER ANYTHING MAJOR CHANGED ON THE ROBOT! carry autonomous future programmers
+
 
 ## Wireless Uploading
 There are two ways to wirelessly upload code, and for the most part this is simply for pleasure without having to move around. If all fails, wire it up!  
