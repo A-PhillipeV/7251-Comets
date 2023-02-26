@@ -16,151 +16,190 @@ import org.firstinspires.ftc.teamcode.RoadRunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.RoadRunner.drive.trajectorysequence.TrajectorySequence;
 
 /*
- * This is a simple routine to test translational drive capabilities.
- */
+* This is a simple routine to test translational drive capabilities.
+*/
 @Config
 @Autonomous(group = "drive")
 public class RoadRunnerTesting extends LinearOpMode {
-    DcMotor arm;
-    CRServo hand;
-    DcMotor m1;
-    DcMotor m2;
-    DcMotor m3;
-    DcMotor m4;
+   DcMotor arm;
+   CRServo hand;
+   DcMotor m1;
+   DcMotor m2;
+   DcMotor m3;
+   DcMotor m4;
 
-    @Override
-    public void runOpMode() throws InterruptedException {
-        arm = hardwareMap.get(DcMotor.class, "Arm");
-        hand = hardwareMap.get(CRServo.class, "Hand");
+   @Override
+   public void runOpMode() throws InterruptedException {
+       arm = hardwareMap.get(DcMotor.class, "Arm");
+       hand = hardwareMap.get(CRServo.class, "Hand");
 
-        m1 = hardwareMap.get(DcMotor.class, "Motor 1");
-        m2 = hardwareMap.get(DcMotor.class, "Motor 2");
-        m3 = hardwareMap.get(DcMotor.class, "Motor 3");
-        m4 = hardwareMap.get(DcMotor.class, "Motor 4");
+       m1 = hardwareMap.get(DcMotor.class, "Motor 1");
+       m2 = hardwareMap.get(DcMotor.class, "Motor 2");
+       m3 = hardwareMap.get(DcMotor.class, "Motor 3");
+       m4 = hardwareMap.get(DcMotor.class, "Motor 4");
 
-        Telemetry telemetry = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
+       Telemetry telemetry = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+       SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+       Pose2d startPose = new Pose2d(-34, 70, Math.toRadians(-90));
+       drive.setPoseEstimate(startPose);
 
-        //Path Starts Here
+       //Getting first cone to medium junction
+       TrajectorySequence trajSeq1 = drive.trajectorySequenceBuilder(startPose)
+                       .strafeLeft(32) //change to strafeLeft(34) don't think it matters tho
+                       .lineToLinearHeading(new Pose2d(2,28,Math.toRadians(180)))
+                       .forward(4) //comment out if raising arm once at medium junction
+                       .addTemporalMarker(()->openHand())
+                       .build();
 
-        /*
-        TrajectorySequence trajSeq = drive.trajectorySequenceBuilder(new Pose2d())
-                .lineToLinearHeading(new Pose2d(47,0, Math.toRadians(90)))
-                .addDisplacementMarker(() -> {
-                    linearDrive(0.4, 2000);
-                })
-                .forward(3)
-                .addDisplacementMarker(() -> {
-                    openHand();
-                })
+       //place the first cone
+       TrajectorySequence trajSeq2 = drive.trajectorySequenceBuilder(trajSeq1.end())
+                       //.forward(4) //uncomment if raising arm after arriving at medium junction
+                       .back(4)
+                       .strafeLeft(14)
+                       .addTemporalMarker(()->armMove(0.75, -2000))
+                       .forward(49)
+                       .waitSeconds(1)
+                       .addTemporalMarker(()->closeHand())
 
-                .build();
+                       //move from cone stack to medium junction
+                       .lineToLinearHeading(new Pose2d(-3, 13, Math.toRadians(90)))
+                       .addTemporalMarker(()->armMove(0.75, 2000))
 
-         */
+                       //move forward and drop cone
+                       .forward(1)
+                       .addTemporalMarker(()->openHand())
+                       .build();
+       // spam cones after the second cone is placed
+       TrajectorySequence trajSeq3 = drive.trajectorySequenceBuilder(trajSeq2.end())
+                       .back(8)
+                       .addTemporalMarker(()->armMove(0.75, -2100))
+                       .lineToLinearHeading(new Pose2d(-44, 10.5, Math.toRadians(180)))
+                       .build();
 
+       waitForStart();
 
-        Trajectory trajectory1 = drive.trajectoryBuilder(new Pose2d())
-                .strafeRight(16)
-                .build();
+       if (!isStopRequested())
+       {
+           //Close hand and move arm up to prevent robot from crashing
+           closeHand();
+           armMove(0.75, 2400);
 
-        Trajectory trajectory2 = drive.trajectoryBuilder(trajectory1.end())
-                .forward(32)
-                .build();
-        Trajectory trajectory3 = drive.trajectoryBuilder(trajectory2.end())
-                .strafeRight(8)
-                .build();
-        Trajectory trajectory4 = drive.trajectoryBuilder(trajectory3.end())
-                .lineToLinearHeading(new Pose2d(-2,0, Math.toRadians(-90)))
-                .build();
+           //strafe left, and then linearDrive to medium junction. then let go of cone
+           drive.followTrajectorySequence(trajSeq1);
 
+           //move back, strafe right, and move arm down to appropriate level
+           drive.followTrajectorySequence(trajSeq2);
 
-
-
-        waitForStart();
-
-        if (isStopRequested()) return;
-
-        //actual movement starts here
-        closeHand();
-        armMove(0.75, 1200);
-        drive.followTrajectory(trajectory1);
-        drive.followTrajectory(trajectory2);
-        openHand();
-        drive.followTrajectory(trajectory3);
-        drive.followTrajectory(trajectory4);
-
-
-
-
-        //
-
-        Pose2d poseEstimate = drive.getPoseEstimate();
-        telemetry.update();
-
-        while (!isStopRequested() && opModeIsActive()) ;
-    }
+           drive.followTrajectorySequence(trajSeq3);
+       }
 
 
-    public void armMove(double speed,
-                            double target) {
-        int newArmTarget;
 
-        double armPower;
+       //Path Starts Here
 
-        arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+       /* OG CODE: WORKS
+       Trajectory trajectory1 = drive.trajectoryBuilder(new Pose2d())
+               .strafeRight(16)
+               .build();
 
-        newArmTarget = arm.getCurrentPosition() + (int)(target);
-
-        // Ensure that the opmode is still active
-        if (opModeIsActive()) {
-
-            arm.setTargetPosition(-newArmTarget);
-            m1.setPower(0);
-            m2.setPower(0);
-            m3.setPower(0);
-            m4.setPower(0);
-
-            arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-            // reset the timeout time and start motion.  (these values are for strafing right)
-            //runtime.reset();
+       Trajectory trajectory2 = drive.trajectoryBuilder(trajectory1.end())
+               .forward(32)
+               .build();
+       Trajectory trajectory3 = drive.trajectoryBuilder(trajectory2.end())
+               .strafeRight(8)
+               .build();
+       Trajectory trajectory4 = drive.trajectoryBuilder(trajectory3.end())
+               .lineToLinearHeading(new Pose2d(-2,0, Math.toRadians(-90)))
+               .build();
 
 
-            armPower = speed;
-
-            arm.setPower(armPower);
-
-            while (opModeIsActive() &&
-                    (arm.isBusy())) {
-
-                // Display it for the driver.
-                telemetry.addData("Running to (LINEAR DRIVE)",  "Arm: %7d ",
-                        newArmTarget);
-                telemetry.addData("Currently at (LINEAR DRIVE)",  "Arm: %7d",
-                        arm.getCurrentPosition());
-                telemetry.update();
-            }
-
-            // Stop all motion;
-            //arm.setPower(0);
-
-        }
 
 
-    }
-    //linear drive ends here - david elian valaarezo
+       waitForStart();
 
-    public void openHand() {
-        hand.setPower(1);
-        sleep(1750);
-        hand.setPower(0);
-    }
+       if (isStopRequested()) return;
 
-    public void closeHand() {
-        hand.setPower(-1);
-        sleep(1750);
-        hand.setPower(0);
-    }
+       //actual movement starts here
+       closeHand();
+       armMove(0.75, 1200);
+       drive.followTrajectory(trajectory1);
+       drive.followTrajectory(trajectory2);
+       openHand();
+       drive.followTrajectory(trajectory3);
+       drive.followTrajectory(trajectory4);
+       */
+
+
+
+
+       Pose2d poseEstimate = drive.getPoseEstimate();
+       telemetry.update();
+
+       while (!isStopRequested() && opModeIsActive()) ;
+   }
+
+
+   public void armMove(double speed,
+                           double target) {
+       int newArmTarget;
+
+       double armPower;
+
+       arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+       newArmTarget = arm.getCurrentPosition() + (int)(target);
+
+       // Ensure that the opmode is still active
+       if (opModeIsActive()) {
+
+           arm.setTargetPosition(-newArmTarget);
+           m1.setPower(0);
+           m2.setPower(0);
+           m3.setPower(0);
+           m4.setPower(0);
+
+           arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+           // reset the timeout time and start motion.  (these values are for strafing right)
+           //runtime.reset();
+
+
+           armPower = speed;
+
+           arm.setPower(armPower);
+
+           while (opModeIsActive() &&
+                   (arm.isBusy())) {
+
+               // Display it for the driver.
+               telemetry.addData("Running to (LINEAR DRIVE)",  "Arm: %7d ",
+                       newArmTarget);
+               telemetry.addData("Currently at (LINEAR DRIVE)",  "Arm: %7d",
+                       arm.getCurrentPosition());
+               telemetry.update();
+           }
+
+           // Stop all motion;
+           //arm.setPower(0);
+
+       }
+
+
+   }
+   //linear drive ends here - david elian valaarezo
+
+   public void openHand() {
+       hand.setPower(1);
+       sleep(1750);
+       hand.setPower(0);
+   }
+
+   public void closeHand() {
+       hand.setPower(-1);
+       sleep(1750);
+       hand.setPower(0);
+   }
 
 }
+
